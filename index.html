@@ -49,10 +49,29 @@ body.drawer-open { overflow: hidden; }
 img { max-width: 100%; }
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 
-/* Icones PNG: os arquivos tem cores diferentes (brancos, pretos, azul).
-   Tudo e normalizado para branco (brightness(0) deixa preto, invert deixa branco). */
+/* Icones PNG: normalizados para branco por padrao */
 .ic { filter: brightness(0) invert(1); display: block; flex-shrink: 0; }
 .ic-dark { filter: brightness(0); }
+
+/* MOLDURA AMARELA do icone: para icones pretos com simbolos brancos */
+.icon-plate {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--gold);
+    flex-shrink: 0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+}
+.icon-plate img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    filter: none;
+}
 
 /* Fundo */
 .parallax-wrap { position: fixed; inset: 0; z-index: -3; overflow: hidden; pointer-events: none; }
@@ -87,6 +106,8 @@ img { max-width: 100%; }
 .header-logo { width: 38px; height: 38px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
 .header-title { font-family: var(--display); font-size: 20px; line-height: 1.1; letter-spacing: 0.01em; }
 .header-sub { font-size: 12px; color: var(--muted); line-height: 1.2; margin-top: 2px; }
+
+/* Status "Aguardando" com fundo do painel e pontinho piscando */
 .header-status {
     margin-left: auto; display: flex; align-items: center; gap: 8px;
     font-size: 13px; font-weight: 600; color: var(--text);
@@ -94,21 +115,35 @@ img { max-width: 100%; }
     background: var(--panel); border: 1px solid var(--line);
     white-space: nowrap;
 }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.6); animation: pulse 1.8s infinite; }
-.status-dot.waiting { background: var(--gold); box-shadow: none; animation: none; }
-.status-dot.ended { background: var(--muted); box-shadow: none; animation: none; }
-@keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(61, 220, 151, 0); } 100% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0); } }
+.status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--gold);
+    animation: pulse-gold 1.8s infinite;
+}
+.status-dot.live { background: var(--live); animation: pulse-live 1.8s infinite; }
+.status-dot.ended { background: var(--muted); animation: none; box-shadow: none; }
+@keyframes pulse-gold {
+    0%   { box-shadow: 0 0 0 0 rgba(255, 194, 61, 0.65); }
+    70%  { box-shadow: 0 0 0 8px rgba(255, 194, 61, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 194, 61, 0); }
+}
+@keyframes pulse-live {
+    0%   { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.65); }
+    70%  { box-shadow: 0 0 0 8px rgba(61, 220, 151, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0); }
+}
 
+/* Botao do menu: sem fundo (transparente), so o icone na moldura amarela */
 .drawer-toggle {
     display: flex; align-items: center; gap: 8px;
-    height: 40px; padding: 0 14px; border-radius: 12px;
-    background: var(--gold); color: #1B1200; border: 0;
+    height: 40px; padding: 0 10px; border-radius: 999px;
+    background: transparent; color: var(--text);
+    border: 0;
     font: 700 14px var(--body); cursor: pointer;
     transition: transform 0.15s ease, background 0.15s ease;
 }
-.drawer-toggle:hover { background: #FFD066; }
+.drawer-toggle:hover { background: rgba(255, 255, 255, 0.08); }
 .drawer-toggle:active { transform: scale(0.96); }
-.drawer-toggle img { filter: brightness(0); }
 
 /* Hero */
 .hero {
@@ -309,8 +344,8 @@ img { max-width: 100%; }
     .bau-trigger { order: -1; width: 120px; }
     .session-list { grid-template-columns: 1fr; }
     .chances-row { flex-direction: column; align-items: flex-start; gap: 8px; }
-    .drawer-toggle-label { display: none; }
-    .drawer-toggle { padding: 0 12px; }
+    .drawer-toggle { padding: 0 8px; }
+    .header-status span:last-child { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -333,12 +368,13 @@ img { max-width: 100%; }
                 <div class="header-sub">Parintins, AMT (UTC−4)</div>
             </div>
             <div class="header-status">
-                <span class="status-dot waiting" id="headerDot"></span>
+                <span class="status-dot" id="headerDot"></span>
                 <span id="headerStatus">Aguardando</span>
             </div>
             <button class="drawer-toggle" id="drawerToggle" type="button" aria-label="Abrir menu lateral" aria-expanded="false" aria-controls="drawer">
-                <img src="barra_lateral.png" alt="" width="18" height="18" onerror="this.style.display='none'">
-                <span class="drawer-toggle-label">Menu</span>
+                <span class="icon-plate">
+                    <img src="barra_lateral.png" alt="" width="28" height="28" onerror="this.parentElement.style.display='none'">
+                </span>
             </button>
         </div>
     </div>
@@ -456,7 +492,9 @@ img { max-width: 100%; }
 
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
     <div class="drawer-header">
-        <img class="ic" src="barra_lateral.png" alt="" width="20" height="20" onerror="this.style.display='none'">
+        <span class="icon-plate">
+            <img src="barra_lateral.png" alt="" width="28" height="28" onerror="this.parentElement.style.display='none'">
+        </span>
         <span class="drawer-title" id="drawerTitle">Menu do baú</span>
         <button class="drawer-close" id="drawerClose" type="button" aria-label="Fechar menu">&times;</button>
     </div>
@@ -817,7 +855,7 @@ img { max-width: 100%; }
     function setState(state) {
         el.timer.setAttribute('data-state', state);
         var dotClass = 'status-dot';
-        if (state === 'waiting') dotClass += ' waiting';
+        if (state === 'live') dotClass += ' live';
         if (state === 'ended') dotClass += ' ended';
         el.headerDot.className = dotClass;
         if (state === 'live') el.headerStatus.textContent = 'Ao vivo';
