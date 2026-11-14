@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notificador Discord — Alya do Fortnite</title>
+<link rel="icon" type="image/x-icon" href="icone_alya.jpg">
+<link rel="icon" type="image/png" href="icone_alya.jpg">
+<link rel="apple-touch-icon" href="icone_alya.jpg">
+<meta name="theme-color" content="#100C24">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg: #100C24;
+    --panel: #1A1440;
+    --panel-2: #241B58;
+    --line: rgba(255, 255, 255, 0.1);
+    --line-strong: rgba(255, 255, 255, 0.2);
+    --text: #F4F1FF;
+    --muted: #ABA3D2;
+    --gold: #FFC23D;
+    --violet: #9B5CFF;
+    --live: #3DDC97;
+    --danger: #FF5C7A;
+    --discord: #5865F2;
+    --display: 'Lilita One', 'Figtree', system-ui, sans-serif;
+    --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+    font-family: var(--body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: url('background.jpg') center / cover no-repeat;
+    opacity: 0.28;
+    pointer-events: none;
+}
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+        radial-gradient(900px 500px at 85% -5%, rgba(155, 92, 255, 0.4), transparent 60%),
+        radial-gradient(700px 420px at 0% 30%, rgba(255, 194, 61, 0.15), transparent 60%),
+        linear-gradient(180deg, rgba(16, 12, 36, 0.65), var(--bg) 92%);
+    pointer-events: none;
+}
+
+.card {
+    width: 100%;
+    max-width: 560px;
+    background: linear-gradient(160deg, var(--panel-2), var(--panel) 70%);
+    border: 1px solid var(--line-strong);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    position: relative;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.card-header-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.title {
+    font-family: var(--display);
+    font-size: clamp(26px, 5vw, 34px);
+    line-height: 1.1;
+    background: linear-gradient(180deg, #FFFFFF 10%, #FFD878 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.35));
+}
+
+.subtitle {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.5;
+}
+.subtitle code {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--gold);
+}
+
+.field { margin-top: 24px; }
+
+.label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+}
+
+.input {
+    width: 100%;
+    background: rgba(8, 5, 24, 0.55);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--text);
+    font: 500 15px var(--body);
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(255, 194, 61, 0.15);
+}
+.input::placeholder { color: rgba(171, 163, 210, 0.55); }
+
+.mention-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: rgba(255, 194, 61, 0.08);
+    border: 1px solid rgba(255, 194, 61, 0.25);
+    border-radius: 12px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+.mention-toggle input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--gold);
+    cursor: pointer;
+}
+.mention-toggle span { color: var(--text); }
+.mention-toggle small { color: var(--muted); font-weight: 500; }
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 52px;
+    border: 0;
+    border-radius: 14px;
+    font: 700 16px var(--body);
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-live {
+    background: var(--live);
+    color: #06281A;
+}
+.btn-live:hover:not(:disabled) { background: #63F0B4; }
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--line-strong);
+}
+.btn-secondary:hover:not(:disabled) { background: rgba(255, 255, 255, 0.08); }
+
+.btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(255, 92, 122, 0.4);
+}
+.btn-danger:hover:not(:disabled) { background: rgba(255, 92, 122, 0.1); }
+
+/* Icone no botao: PNG branco/normal, sem moldura, como no site */
+.btn-icon {
+    width: 22px;
+    height: 22px;
+    display: block;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+.btn-live .btn-icon {
+    filter: brightness(0);
+}
+.btn-secondary .btn-icon,
+.btn-danger .btn-icon {
+    filter: brightness(0) invert(1);
+}
+
+.status {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    display: none;
+    word-break: break-word;
+}
+.status.show { display: block; }
+.status.success {
+    background: rgba(61, 220, 151, 0.12);
+    border: 1px solid rgba(61, 220, 151, 0.35);
+    color: #9EF5C8;
+}
+.status.error {
+    background: rgba(255, 92, 122, 0.12);
+    border: 1px solid rgba(255, 92, 122, 0.35);
+    color: #FFB0C0;
+}
+.status.info {
+    background: rgba(91, 181, 255, 0.1);
+    border: 1px solid rgba(91, 181, 255, 0.3);
+    color: #B7D9FF;
+}
+
+.status strong { color: #fff; }
+
+.agenda {
+    margin-top: 20px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: rgba(8, 5, 24, 0.55);
+    overflow: hidden;
+    display: none;
+}
+.agenda.show { display: block; }
+.agenda-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--line);
+}
+.agenda-header img {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
+}
+.agenda-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+}
+.agenda-item:last-child { border-bottom: 0; }
+.agenda-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+}
+.agenda-item.pending .agenda-dot { background: var(--gold); }
+.agenda-item.sent .agenda-dot { background: var(--live); }
+.agenda-item.sent { opacity: 0.65; }
+.agenda-time {
+    font-family: var(--display);
+    font-size: 16px;
+    min-width: 62px;
+    color: var(--text);
+}
+.agenda-label { flex: 1; color: var(--muted); }
+.agenda-item.pending .agenda-label { color: var(--text); font-weight: 600; }
+.agenda-countdown {
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: 700;
+}
+.agenda-item.sent .agenda-countdown { color: var(--live); }
+
+.footer-note {
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    text-align: center;
+}
+.footer-note a { color: var(--gold); }
+
+.preview {
+    margin-top: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: #2B2D31;
+    padding: 12px;
+    font-size: 14px;
+}
+.preview-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+}
+.preview-msg {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+.preview-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--gold), var(--violet));
+}
+.preview-content { flex: 1; min-width: 0; }
+.preview-author {
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.preview-bot {
+    font-size: 10px;
+    background: var(--discord);
+    color: #fff;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 700;
+}
+.preview-text {
+    margin-top: 4px;
+    color: #DBDEE1;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.preview-text .mention {
+    background: rgba(88, 101, 242, 0.3);
+    color: #C9CDFB;
+    padding: 0 2px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+.bg-bau {
+    position: fixed;
+    right: -60px;
+    bottom: -60px;
+    width: 340px;
+    max-width: 50vw;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.6));
+}
+
+@media (max-width: 480px) {
+    .card { padding: 24px 20px; border-radius: 20px; }
+    .btn { height: 48px; font-size: 15px; }
+    .bg-bau { display: none; }
+}
+</style>
+</head>
+<body>
+
+<img src="bau_1.png" alt="" class="bg-bau" aria-hidden="true" onerror="this.style.display='none'">
+
+<main class="card">
+    <div class="card-header">
+        <img src="icone_alya.jpg" alt="" class="card-header-logo" width="40" height="40" onerror="this.style.display='none'">
+        <h1 class="title">Notificador Discord</h1>
+    </div>
+    <p class="subtitle">
+        Cole o link do <strong>webhook</strong> do Discord. O bot <strong>Alya do Fortnite</strong>
+        avisa automaticamente nos horários das sessões, sem você precisar configurar nada.
+    </p>
+
+    <form id="form" autocomplete="off">
+        <div class="field">
+            <label class="label" for="webhook">URL do Webhook do Discord</label>
+            <input
+                class="input"
+                type="url"
+                id="webhook"
+                name="webhook"
+                placeholder="https://discord.com/api/webhooks/..."
+                required
+                spellcheck="false">
+        </div>
+
+        <label class="mention-toggle">
+            <input type="checkbox" id="mentionEveryone" checked>
+            <span>@everyone</span>
+            <small>nas mensagens de início, fim e a cada hora</small>
+        </label>
+
+        <div class="preview">
+            <div class="preview-label">Prévia da mensagem</div>
+            <div class="preview-msg">
+                <img src="icone_alya.jpg" alt="" class="preview-avatar" width="36" height="36" onerror="this.style.display='none'">
+                <div class="preview-content">
+                    <div class="preview-author">
+                        Alya do Fortnite
+                        <span class="preview-bot">BOT</span>
+                    </div>
+                    <div class="preview-text" id="previewText"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-live" type="button" id="startBtn">
+                <img src="jogar.png" alt="" class="btn-icon" width="22" height="22" onerror="this.style.display='none'">
+                Ativar avisos automáticos
+            </button>
+            <button class="btn btn-secondary" type="button" id="testBtn">
+                <img src="mandar.png" alt="" class="btn-icon" width="22" height="22" onerror="this.style.display='none'">
+                Enviar mensagem de teste
+            </button>
+            <button class="btn btn-danger" type="button" id="stopBtn" style="display:none;">
+                <img src="desativado.png" alt="" class="btn-icon" width="22" height="22" onerror="this.style.display='none'">
+                Desativar avisos
+            </button>
+        </div>
+    </form>
+
+    <div class="agenda" id="agenda">
+        <div class="agenda-header">
+            <img src="temporizador.png" alt="" onerror="this.style.display='none'">
+            Próximos avisos
+        </div>
+        <div id="agendaList"></div>
+    </div>
+
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+
+    <p class="footer-note">
+        Webhook e estado ficam salvos só no seu navegador. Mantenha a aba aberta para os avisos dispararem.<br>
+        <a href="https://support.discord.com/hc/pt-br/articles/228383668" target="_blank" rel="noopener">Como criar um webhook?</a>
+    </p>
+</main>
+
+<script>
+(function () {
+    'use strict';
+
+    var STORAGE_WEBHOOK = 'discord_webhook_alya_fortnite';
+    var STORAGE_ACTIVE = 'discord_active_alya_fortnite';
+    var STORAGE_SENT = 'discord_sent_alya_fortnite';
+    var BOT_NAME = 'Alya do Fortnite';
+
+    var SESSIONS = [
+        { inicio: new Date('2026-11-14T15:00:00-04:00'), fim: new Date('2026-11-14T17:00:00-04:00'), nome: 'primeira sessão' },
+        { inicio: new Date('2026-11-14T22:00:00-04:00'), fim: new Date('2026-11-15T00:00:00-04:00'), nome: 'segunda sessão' }
+    ];
+
+    var webhookInput = document.getElementById('webhook');
+    var mentionCheckbox = document.getElementById('mentionEveryone');
+    var startBtn = document.getElementById('startBtn');
+    var testBtn = document.getElementById('testBtn');
+    var stopBtn = document.getElementById('stopBtn');
+    var statusEl = document.getElementById('status');
+    var previewText = document.getElementById('previewText');
+    var agendaEl = document.getElementById('agenda');
+    var agendaList = document.getElementById('agendaList');
+
+    var tickInterval = null;
+
+    function loadState() {
+        var state = { webhook: '', active: false, sent: {} };
+        try {
+            state.webhook = localStorage.getItem(STORAGE_WEBHOOK) || '';
+            state.active = localStorage.getItem(STORAGE_ACTIVE) === '1';
+            var sentRaw = localStorage.getItem(STORAGE_SENT);
+            if (sentRaw) state.sent = JSON.parse(sentRaw) || {};
+        } catch (e) {}
+        return state;
+    }
+    function saveWebhook(url) {
+        try { localStorage.setItem(STORAGE_WEBHOOK, url); } catch (e) {}
+    }
+    function saveActive(active) {
+        try { localStorage.setItem(STORAGE_ACTIVE, active ? '1' : '0'); } catch (e) {}
+    }
+    function saveSent(sent) {
+        try { localStorage.setItem(STORAGE_SENT, JSON.stringify(sent)); } catch (e) {}
+    }
+
+    var state = loadState();
+    webhookInput.value = state.webhook;
+
+    function showStatus(type, html) {
+        statusEl.className = 'status show ' + type;
+        statusEl.innerHTML = html;
+    }
+    function hideStatus() {
+        statusEl.className = 'status';
+        statusEl.innerHTML = '';
+    }
+    function escapeHtml(s) {
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+    function updatePreview() {
+        var html = '<span class="mention">@everyone</span>\nHora de jogar, baitolas! O baú vai abrir, bora pro Fortnite 🎮';
+        if (!mentionCheckbox.checked) {
+            html = 'Hora de jogar, baitolas! O baú vai abrir, bora pro Fortnite 🎮';
+        }
+        previewText.innerHTML = html;
+    }
+    mentionCheckbox.addEventListener('change', updatePreview);
+    updatePreview();
+
+    function isValidWebhook(url) {
+        return /^https:\/\/(discord|discordapp)\.com\/api\/webhooks\/\d+\/[\w-]+$/.test(url.trim());
+    }
+
+    function fmtTime(d) {
+        try {
+            return d.toLocaleTimeString('pt-BR', {
+                timeZone: 'America/Manaus',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (e) {
+            return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+    }
+    function pad2(n) { return n < 10 ? '0' + n : String(n); }
+    function fmtCountdown(ms) {
+        if (ms <= 0) return '00:00:00';
+        var total = Math.floor(ms / 1000);
+        var h = Math.floor(total / 3600);
+        var m = Math.floor((total % 3600) / 60);
+        var s = total % 60;
+        return pad2(h) + ':' + pad2(m) + ':' + pad2(s);
+    }
+
+    async function postToDiscord(content) {
+        var url = webhookInput.value.trim();
+        if (!isValidWebhook(url)) return false;
+        try {
+            var res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content: content,
+                    username: BOT_NAME,
+                    allowed_mentions: { parse: ['everyone'] }
+                })
+            });
+            return res.ok || res.status === 204;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function buildStartMessage(ev) {
+        var base = 'Hora de jogar, baitolas! O baú vai abrir, bora pro Fortnite 🎮';
+        if (mentionCheckbox.checked) return '@everyone\n' + base;
+        return base;
+    }
+    function buildEndMessage(ev) {
+        var base = 'O baú fechou, baitolas! Fim da ' + ev.nome + '. Valeu squad 🎮';
+        if (mentionCheckbox.checked) return '@everyone\n' + base;
+        return base;
+    }
+    function buildHourlyMessage(ev) {
+        var base = 'Lembrete: o baú está aberto, baitolas! Bora pro Fortnite 🎮';
+        if (mentionCheckbox.checked) return '@everyone\n' + base;
+        return base;
+    }
+
+    function buildEvents() {
+        var events = [];
+        SESSIONS.forEach(function (s, idx) {
+            events.push({
+                key: 's' + idx + '_start',
+                at: s.inicio.getTime(),
+                tipo: 'inicio',
+                nome: s.nome,
+                hora: fmtTime(s.inicio)
+            });
+            events.push({
+                key: 's' + idx + '_end',
+                at: s.fim.getTime(),
+                tipo: 'fim',
+                nome: s.nome,
+                hora: fmtTime(s.fim)
+            });
+            var cursor = new Date(s.inicio.getTime());
+            cursor.setMinutes(0, 0, 0);
+            cursor.setHours(cursor.getHours() + 1);
+            var hourIdx = 0;
+            while (cursor.getTime() < s.fim.getTime()) {
+                events.push({
+                    key: 's' + idx + '_hour' + hourIdx,
+                    at: cursor.getTime(),
+                    tipo: 'hora',
+                    nome: s.nome,
+                    hora: fmtTime(cursor)
+                });
+                hourIdx++;
+                cursor = new Date(cursor.getTime() + 60 * 60 * 1000);
+            }
+        });
+        return events;
+    }
+
+    function isIgnored(event, now) {
+        return (now - event.at) > (60 * 60 * 1000);
+    }
+
+    function renderAgenda() {
+        if (!state.active) {
+            agendaEl.classList.remove('show');
+            return;
+        }
+        var now = Date.now();
+        var events = buildEvents().filter(function (ev) {
+            return !state.sent[ev.key] && !isIgnored(ev, now);
+        });
+
+        if (events.length === 0) {
+            agendaEl.classList.add('show');
+            agendaList.innerHTML = '<div class="agenda-item"><span class="agenda-label">Nenhum aviso pendente. Todas as sessões já foram avisadas ou estão fora da janela de 1 hora.</span></div>';
+            return;
+        }
+
+        events.sort(function (a, b) { return a.at - b.at; });
+
+        agendaEl.classList.add('show');
+        agendaList.innerHTML = events.map(function (ev) {
+            var label;
+            if (ev.tipo === 'inicio') label = 'Início - ' + ev.nome;
+            else if (ev.tipo === 'fim') label = 'Fim - ' + ev.nome;
+            else label = 'Lembrete de hora - ' + ev.nome;
+            var diff = ev.at - now;
+            var countdownText = diff > 0 ? fmtCountdown(diff) : 'enviando...';
+            var isPast = diff <= 0;
+            var cls = isPast ? 'agenda-item sent' : 'agenda-item pending';
+            return '<div class="' + cls + '">' +
+                '<span class="agenda-dot"></span>' +
+                '<span class="agenda-time">' + ev.hora + '</span>' +
+                '<span class="agenda-label">' + escapeHtml(label) + '</span>' +
+                '<span class="agenda-countdown">' + countdownText + '</span>' +
+                '</div>';
+        }).join('');
+    }
+
+    function updateCountdowns() {
+        if (!state.active) return;
+        var now = Date.now();
+        var items = agendaList.querySelectorAll('.agenda-item.pending');
+        var events = buildEvents().filter(function (ev) {
+            return !state.sent[ev.key] && !isIgnored(ev, now);
+        }).sort(function (a, b) { return a.at - b.at; });
+
+        items.forEach(function (item, i) {
+            var ev = events[i];
+            if (!ev) return;
+            var diff = ev.at - now;
+            var countdownEl = item.querySelector('.agenda-countdown');
+            if (countdownEl) {
+                countdownEl.textContent = diff > 0 ? fmtCountdown(diff) : 'enviando...';
+                if (diff <= 0) {
+                    item.classList.remove('pending');
+                    item.classList.add('sent');
+                }
+            }
+        });
+    }
+
+    async function fireEvent(ev) {
+        if (state.sent[ev.key]) return;
+        state.sent[ev.key] = Date.now();
+        saveSent(state.sent);
+
+        var content;
+        if (ev.tipo === 'inicio') content = buildStartMessage(ev);
+        else if (ev.tipo === 'fim') content = buildEndMessage(ev);
+        else content = buildHourlyMessage(ev);
+
+        var ok = await postToDiscord(content);
+
+        if (ok) {
+            showStatus('success', '<strong>Aviso enviado.</strong> ' + escapeHtml(ev.nome) + ' às ' + ev.hora + '.');
+        } else {
+            showStatus('error', '<strong>Falha ao enviar aviso.</strong> Verifique o webhook. O aviso de ' + ev.hora + ' não será reenviado.');
+        }
+        renderAgenda();
+    }
+
+    function tick() {
+        if (!state.active) return;
+        var now = Date.now();
+        var events = buildEvents();
+
+        events.forEach(function (ev) {
+            if (state.sent[ev.key]) return;
+            if (isIgnored(ev, now)) return;
+            if (ev.at <= now) {
+                fireEvent(ev);
+            }
+        });
+
+        updateCountdowns();
+    }
+
+    function startTicking() {
+        stopTicking();
+        tick();
+        tickInterval = setInterval(tick, 1000);
+    }
+    function stopTicking() {
+        if (tickInterval) {
+            clearInterval(tickInterval);
+            tickInterval = null;
+        }
+    }
+
+    startBtn.addEventListener('click', function () {
+        hideStatus();
+        var url = webhookInput.value.trim();
+        if (!url) {
+            showStatus('error', '<strong>Faltou o webhook.</strong> Cole a URL antes de ativar.');
+            webhookInput.focus();
+            return;
+        }
+        if (!isValidWebhook(url)) {
+            showStatus('error', '<strong>URL inválida.</strong> Ela deve começar com <code>https://discord.com/api/webhooks/</code> e ter o ID e o token.');
+            webhookInput.focus();
+            return;
+        }
+        saveWebhook(url);
+        state.active = true;
+        saveActive(true);
+        startBtn.style.display = 'none';
+        stopBtn.style.display = '';
+        showStatus('success', '<strong>Avisos automáticos ativados.</strong> O bot avisa no início e no fim de cada sessão e a cada hora cheia dentro da sessão. Se um horário já passou há menos de 1 hora, o aviso é enviado agora; se passou mais de 1 hora, é ignorado.');
+        startTicking();
+        renderAgenda();
+    });
+
+    testBtn.addEventListener('click', async function () {
+        hideStatus();
+        var url = webhookInput.value.trim();
+        if (!isValidWebhook(url)) {
+            showStatus('error', '<strong>Webhook inválido.</strong> Cole a URL completa do webhook antes de testar.');
+            webhookInput.focus();
+            return;
+        }
+        saveWebhook(url);
+        testBtn.disabled = true;
+        showStatus('info', 'Enviando mensagem de teste...');
+        var ok = await postToDiscord('Teste do Alya do Fortnite. Os avisos automáticos estão funcionando.');
+        testBtn.disabled = false;
+        if (ok) {
+            showStatus('success', '<strong>Teste enviado.</strong> Confere lá no canal do Discord.');
+        } else {
+            showStatus('error', '<strong>Falha no teste.</strong> Verifique se o webhook ainda é válido.');
+        }
+    });
+
+    stopBtn.addEventListener('click', function () {
+        state.active = false;
+        saveActive(false);
+        stopTicking();
+        startBtn.style.display = '';
+        stopBtn.style.display = 'none';
+        agendaEl.classList.remove('show');
+        showStatus('info', 'Avisos automáticos desativados. Os horários já enviados continuam marcados como enviados.');
+    });
+
+    if (state.active) {
+        startBtn.style.display = 'none';
+        stopBtn.style.display = '';
+        startTicking();
+        renderAgenda();
+    }
+
+    setInterval(function () {
+        if (state.active) renderAgenda();
+    }, 1000);
+})();
+</script>
+</body>
+</html>
