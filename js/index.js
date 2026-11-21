@@ -190,8 +190,8 @@
     var squadTimer = null;
     squadBtn.addEventListener('click', function () {
         var sab = getSessoesDaSemana(new Date()).sabado;
-        var url = window.location.protocol === 'file:' ? 'https://teaga67.github.io/horarios-do-bau-do-fortinite/' : window.location.href;
-        var texto = 'Treasure Hours do Baú do Fortnite em Parintins (' + sab.ddmm + ', 15h–17h e 22h–00h)! Confere os horários: ' + url;
+        var url = window.location.protocol === 'file:' ? 'https://teaga67.github.io/horarios-da-hora-do-tesouro-fortnite/' : window.location.href;
+        var texto = 'Hora do Tesouro do Fortnite em Parintins (' + sab.ddmm + ', 15h–17h e 22h–00h)! Confere os horários: ' + url;
         var isCoarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
 
         function confirmarCopia() {
