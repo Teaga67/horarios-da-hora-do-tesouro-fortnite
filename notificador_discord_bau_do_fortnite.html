@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notificador Discord — Alya do Fortnite</title>
+<link rel="icon" type="image/x-icon" href="assets/icone_alya.jpg">
+<link rel="icon" type="image/png" href="assets/icone_alya.jpg">
+<link rel="apple-touch-icon" href="assets/icone_alya.jpg">
+<meta name="theme-color" content="#100C24">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/notificador.css">
+</head>
+<body>
+
+<img src="assets/bau_1.png" alt="" class="bg-bau" aria-hidden="true" onerror="this.style.display='none'">
+
+<main class="card">
+    <div class="card-header">
+        <img src="assets/icone_alya.jpg" alt="" class="card-header-logo" width="40" height="40" onerror="this.style.display='none'">
+        <h1 class="title">Notificador Discord</h1>
+    </div>
+    <p class="subtitle">
+        Cole o link do <strong>webhook</strong> do Discord. O bot <strong>Alya do Fortnite</strong>
+        avisa automaticamente nos horários das sessões, sem você precisar configurar nada.
+    </p>
+
+    <form id="form" autocomplete="off">
+        <div class="field">
+            <label class="label" for="webhook">URL do Webhook do Discord</label>
+            <input
+                class="input"
+                type="url"
+                id="webhook"
+                name="webhook"
+                placeholder="https://discord.com/api/webhooks/..."
+                required
+                spellcheck="false">
+        </div>
+
+        <label class="mention-toggle">
+            <input type="checkbox" id="mentionEveryone" checked>
+            <span>@everyone</span>
+            <small>nas mensagens de início, fim e a cada hora</small>
+        </label>
+
+        <div class="preview">
+            <div class="preview-label">Prévia da mensagem</div>
+            <div class="preview-msg">
+                <img src="assets/icone_alya.jpg" alt="" class="preview-avatar" width="36" height="36" onerror="this.style.display='none'">
+                <div class="preview-content">
+                    <div class="preview-author">
+                        Alya do Fortnite
+                        <span class="preview-bot">BOT</span>
+                    </div>
+                    <div class="preview-text" id="previewText"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-live" type="button" id="startBtn">
+                <img src="assets/jogar.png" alt="" class="btn-icon" width="22" height="22" onerror="this.style.display='none'">
+                Ativar avisos automáticos
+            </button>
+            <button class="btn btn-secondary" type="button" id="testBtn">
+                <img src="assets/mandar.png" alt="" class="btn-icon" width="22" height="22" onerror="this.style.display='none'">
+                Enviar mensagem de teste
+            </button>
+            <button class="btn btn-danger" type="button" id="stopBtn" style="display:none;">
+                <img src="assets/desativado.png" alt="" class="btn-icon" width="22" height="22" onerror="this.style.display='none'">
+                Desativar avisos
+            </button>
+        </div>
+    </form>
+
+    <div class="agenda" id="agenda">
+        <div class="agenda-header">
+            <img src="assets/temporizador.png" alt="" onerror="this.style.display='none'">
+            Próximos avisos
+        </div>
+        <div id="agendaList"></div>
+    </div>
+
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+
+    <p class="footer-note">
+        Webhook e estado ficam salvos só no seu navegador. Mantenha a aba aberta para os avisos dispararem.<br>
+        <a href="https://support.discord.com/hc/pt-br/articles/228383668" target="_blank" rel="noopener">Como criar um webhook?</a>
+    </p>
+</main>
+
+<script src="js/schedule.js"></script>
+<script src="js/notificador.js"></script>
+</body>
+</html>

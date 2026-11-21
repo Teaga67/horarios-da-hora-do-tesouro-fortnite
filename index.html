@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Baú do Fortnite — Treasure Hours em Parintins</title>
-<link rel="icon" type="image/x-icon" href="icone.ico">
-<link rel="icon" type="image/jpeg" href="icone.jpg">
-<link rel="apple-touch-icon" href="icone.jpg">
+<link rel="icon" type="image/x-icon" href="assets/icone.ico">
+<link rel="icon" type="image/jpeg" href="assets/icone.jpg">
+<link rel="apple-touch-icon" href="assets/icone.jpg">
 <meta name="theme-color" content="#0A0720">
 <meta name="color-scheme" content="dark">
 <meta name="description" content="Horários do Baú do Fortnite (Treasure Hours) no fuso de Parintins, com contagem regressiva e chances do Token Pirata.">
@@ -17,494 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-    --bg: #0A0720;
-    --panel: #150F3A;
-    --panel-2: #231A62;
-    --line: rgba(255, 255, 255, 0.1);
-    --line-strong: rgba(255, 255, 255, 0.2);
-    --text: #F4F1FF;
-    --muted: #B4ADDB;
-    --gold: #FFC93C;
-    --gold-deep: #E39A0B;
-    --violet: #8E5BFF;
-    --live: #3DDC97;
-    --blue: #5BB5FF;
-    --display: 'Lilita One', 'Figtree', system-ui, sans-serif;
-    --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --r: 16px;
-    --drawer-w: 360px;
-    color-scheme: dark;
-}
-
-html { scroll-behavior: smooth; scroll-padding-top: calc(80px + env(safe-area-inset-top, 0px)); -webkit-text-size-adjust: 100%; }
-body {
-    font-family: var(--body);
-    font-size: 16px;
-    line-height: 1.55;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100dvh;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-}
-body.drawer-open { overflow: hidden; }
-img { max-width: 100%; }
-:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
-
-/* Icones PNG: normalizados para branco por padrao */
-.ic { filter: brightness(0) invert(1); display: block; flex-shrink: 0; }
-.ic-dark { filter: brightness(0); }
-
-/* Containers quadrados de icone: fundo do painel, borda sutil, icone branco */
-.icon-square {
-    display: inline-grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    flex-shrink: 0;
-    overflow: hidden;
-}
-.icon-square img {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-    display: block;
-    filter: brightness(0) invert(1);
-}
-
-/* Fundo */
-.parallax-wrap { position: fixed; inset: 0; z-index: -3; overflow: hidden; pointer-events: none; }
-.parallax-layer {
-    position: absolute; top: -10%; left: 0; right: 0; height: 120%;
-    background: url('background.jpg') center / cover no-repeat;
-    opacity: 0.22; will-change: transform;
-}
-.parallax-layer.no-image { background: none; opacity: 1; }
-.parallax-tint {
-    position: fixed; inset: 0; z-index: -2; pointer-events: none;
-    background:
-        radial-gradient(900px 500px at 85% -5%, rgba(155, 92, 255, 0.35), transparent 60%),
-        radial-gradient(700px 420px at 0% 30%, rgba(255, 194, 61, 0.12), transparent 60%),
-        linear-gradient(180deg, rgba(16, 12, 36, 0.55), var(--bg) 85%);
-}
-@media (max-width: 768px) {
-    .parallax-layer { transform: none !important; top: 0; height: 100%; opacity: 0.14; }
-}
-
-.container { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 32px); }
-
-/* Header */
-.site-header {
-    position: sticky; top: 0; z-index: 40;
-    background: rgba(16, 12, 36, 0.78);
-    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--line);
-    padding-top: env(safe-area-inset-top, 0px);
-}
-.header-inner { display: flex; align-items: center; gap: 12px; height: 64px; }
-.header-logo { width: 38px; height: 38px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
-.header-title { font-family: var(--display); font-size: 20px; line-height: 1.1; letter-spacing: 0.01em; }
-.header-sub { font-size: 12px; color: var(--muted); line-height: 1.2; margin-top: 2px; }
-
-/* Status "Aguardando" com fundo do painel e pontinho piscando */
-.header-status {
-    margin-left: auto; display: flex; align-items: center; gap: 8px;
-    font-size: 13px; font-weight: 600; color: var(--text);
-    padding: 6px 12px; border-radius: 999px;
-    background: var(--panel); border: 1px solid var(--line);
-    white-space: nowrap;
-}
-.status-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--gold);
-    animation: pulse-gold 1.8s infinite;
-}
-.status-dot.live { background: var(--live); animation: pulse-live 1.8s infinite; }
-.status-dot.ended { background: var(--muted); animation: none; box-shadow: none; }
-@keyframes pulse-gold {
-    0%   { box-shadow: 0 0 0 0 rgba(255, 194, 61, 0.65); }
-    70%  { box-shadow: 0 0 0 8px rgba(255, 194, 61, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 194, 61, 0); }
-}
-@keyframes pulse-live {
-    0%   { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.65); }
-    70%  { box-shadow: 0 0 0 8px rgba(61, 220, 151, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0); }
-}
-
-/* Botao do menu: quadrado, mesma cor do badge "Aguardando", icone branco */
-.drawer-toggle {
-    display: flex; align-items: center; justify-content: center;
-    height: 44px; min-width: 44px; padding: 0 10px; border-radius: 10px;
-    background: var(--panel); color: var(--text);
-    border: 1px solid var(--line);
-    font: 700 14px var(--body); cursor: pointer;
-    transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-    flex-shrink: 0;
-}
-.drawer-toggle:hover { background: var(--panel-2); border-color: var(--line-strong); }
-.drawer-toggle:active { transform: scale(0.96); }
-.drawer-toggle img {
-    width: 22px; height: 22px; object-fit: contain; display: block;
-    filter: brightness(0) invert(1);
-}
-
-/* Hero */
-.hero {
-    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px;
-    padding: clamp(32px, 7vw, 72px) 0 clamp(20px, 4vw, 36px);
-}
-.hero-title {
-    font-family: var(--display); font-weight: 400;
-    font-size: clamp(40px, 8vw, 84px); line-height: 0.98; letter-spacing: 0.01em;
-    text-wrap: balance;
-    background: linear-gradient(180deg, #FFFFFF 10%, #FFD878 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.35));
-}
-.hero-desc { margin-top: 18px; max-width: 46ch; text-wrap: pretty; font-size: clamp(16px, 2.2vw, 19px); color: var(--muted); }
-.hero-desc strong { color: var(--text); font-weight: 700; }
-
-.bau-trigger {
-    position: relative; background: none; border: 0; cursor: pointer;
-    width: clamp(120px, 24vw, 230px); aspect-ratio: 1;
-    display: grid; place-items: center; border-radius: 50%;
-    -webkit-tap-highlight-color: transparent;
-}
-.bau-trigger::before {
-    content: ''; position: absolute; inset: 6%; border-radius: 50%; z-index: -1;
-    background: radial-gradient(circle, rgba(255, 194, 61, 0.55), rgba(155, 92, 255, 0.25) 60%, transparent 72%);
-    filter: blur(14px);
-}
-.hero-bau { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.5)); transition: transform 0.2s ease; }
-@media (hover: hover) { .bau-trigger:hover .hero-bau { transform: scale(1.05) rotate(-2deg); } }
-.bau-trigger.shake { animation: shake 0.35s; }
-@keyframes shake { 20% { transform: translateX(-6px) rotate(-4deg); } 50% { transform: translateX(6px) rotate(4deg); } 80% { transform: translateX(-3px); } }
-.bau-click-badge {
-    position: absolute; top: 4%; right: 4%; min-width: 30px; height: 30px; padding: 0 8px;
-    display: grid; place-items: center; border-radius: 999px;
-    background: var(--violet); color: #fff; font: 700 14px var(--body);
-    opacity: 0; transform: scale(0.6); transition: 0.2s ease;
-}
-.bau-click-badge.visible { opacity: 1; transform: scale(1); }
-
-/* Timer */
-.timer {
-    position: relative; border-radius: 24px; padding: clamp(20px, 4vw, 32px);
-    background: linear-gradient(160deg, var(--panel-2), var(--panel) 70%);
-    border: 1px solid var(--line-strong);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    overflow: hidden;
-}
-.timer::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--gold);
-}
-.timer[data-state="live"]::before { background: var(--live); }
-.timer[data-state="ended"]::before { background: var(--muted); }
-.timer-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; margin-bottom: 20px; }
-.timer-label { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 700; }
-.timer-target { color: var(--muted); font-size: 15px; }
-.timer-target strong { color: var(--gold); font-weight: 700; }
-.timer[data-state="live"] .timer-target strong { color: var(--live); }
-
-.timer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(8px, 2vw, 16px); }
-.timer-cell {
-    text-align: center; padding: clamp(14px, 3vw, 24px) 4px 12px;
-    background: rgba(8, 5, 24, 0.55); border: 1px solid var(--line); border-radius: 14px;
-}
-.timer-value {
-    font-family: var(--display); font-size: clamp(38px, 9vw, 84px); line-height: 1;
-    font-variant-numeric: tabular-nums; color: var(--text);
-    text-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
-}
-.timer[data-state="live"] .timer-value { color: var(--live); }
-.timer-value.tick { animation: tick 0.3s ease; }
-@keyframes tick { 0% { transform: translateY(-6px); opacity: 0.4; } 100% { transform: none; opacity: 1; } }
-.timer-unit { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
-.timer-footnote { display: flex; align-items: center; gap: 8px; margin-top: 18px; font-size: 13px; color: var(--muted); }
-.timer-footnote svg { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-
-/* Secoes */
-.section { padding-top: clamp(36px, 6vw, 64px); }
-.section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-.section-title { font-family: var(--display); font-weight: 400; font-size: clamp(26px, 4.5vw, 36px); line-height: 1.1; }
-.section-meta { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--muted); padding: 4px 12px; border: 1px solid var(--line-strong); border-radius: 999px; }
-
-/* Sessoes */
-.session-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-.session {
-    position: relative; display: flex; flex-direction: column; gap: 14px;
-    padding: 24px; border-radius: var(--r);
-    background: var(--panel); border: 1px solid var(--line);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.session[data-active="true"] { border-color: var(--live); box-shadow: 0 0 0 1px var(--live), 0 0 36px rgba(61, 220, 151, 0.22); }
-.session-icon-wrap { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: rgba(255, 194, 61, 0.14); color: var(--gold); }
-.session:nth-child(2) .session-icon-wrap { background: rgba(155, 92, 255, 0.2); color: #C7A2FF; }
-.session[data-active="true"] .session-icon-wrap { background: rgba(61, 220, 151, 0.16); color: var(--live); }
-.session-icon-wrap svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.session-name { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; color: var(--muted); }
-.session-badge { font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); color: var(--text); }
-.session-time { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-size: clamp(36px, 6vw, 52px); line-height: 1.05; margin-top: 2px; }
-.session-time .sep svg { width: 28px; height: 28px; fill: none; stroke: var(--muted); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; display: block; }
-.session-time .end { color: var(--gold); }
-.session[data-active="true"] .session-time .end { color: var(--live); }
-.session-note { font-size: 14px; color: var(--muted); }
-
-/* Chances */
-.chances { border-radius: var(--r); background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
-.token-preview { display: flex; align-items: center; gap: 14px; padding: 20px 24px; background: linear-gradient(90deg, rgba(255, 194, 61, 0.14), transparent); border-bottom: 1px solid var(--line); }
-.token-preview img { width: 44px; height: 44px; object-fit: contain; }
-.token-preview-text { display: flex; flex-direction: column; font-size: 14px; color: var(--muted); }
-.token-preview-text strong { font-size: 17px; color: var(--text); }
-.chances-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; border-bottom: 1px solid var(--line); }
-.chances-label { display: flex; align-items: center; gap: 12px; color: var(--muted); font-weight: 500; }
-.chances-badge { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); color: var(--text); }
-.chances-badge.event { background: var(--gold); color: #1B1200; }
-.chances-value { font-family: var(--display); font-size: clamp(22px, 4vw, 30px); white-space: nowrap; }
-.chances-value.highlight { color: var(--gold); }
-.chances-note { padding: 16px 24px; font-size: 14px; color: var(--muted); }
-.figure { margin-top: 20px; }
-.figure.hidden { display: none; }
-.figure img { display: block; width: 100%; border-radius: var(--r); border: 1px solid var(--line); }
-
-.info { display: flex; gap: 14px; padding: 20px 24px; border-radius: var(--r); background: rgba(91, 181, 255, 0.1); border: 1px solid rgba(91, 181, 255, 0.35); font-size: 15px; color: var(--muted); }
-.info img { width: 22px; height: 22px; margin-top: 2px; flex-shrink: 0; }
-.info strong { color: var(--text); }
-
-/* Rodape */
-.site-footer { margin-top: clamp(48px, 8vw, 96px); border-top: 1px solid var(--line); padding: 28px 0 calc(28px + env(safe-area-inset-bottom, 0px)); font-size: 13px; color: var(--muted); }
-.footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
-.site-footer a { color: var(--gold); font-weight: 600; }
-
-/* Gaveta */
-.drawer-overlay { position: fixed; inset: 0; z-index: 50; background: rgba(5, 3, 15, 0.65); backdrop-filter: blur(3px); opacity: 0; transition: opacity 0.25s ease; }
-.drawer-overlay.open { opacity: 1; }
-.drawer-overlay[hidden] { display: none; }
-.drawer {
-    position: fixed; top: 0; right: 0; bottom: 0; z-index: 60;
-    width: min(var(--drawer-w), 92vw);
-    background: var(--panel); border-left: 1px solid var(--line-strong);
-    box-shadow: -20px 0 60px rgba(0, 0, 0, 0.6);
-    transform: translateX(100%); visibility: hidden;
-    transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 0.28s;
-    display: flex; flex-direction: column;
-    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-.drawer.open { transform: none; visibility: visible; transition-delay: 0s; }
-.drawer-header { display: flex; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
-.drawer-title { font-family: var(--display); font-size: 22px; }
-.drawer-close {
-    margin-left: auto; width: 44px; height: 44px; padding: 0;
-    border-radius: 10px; border: 1px solid var(--line);
-    background: var(--panel); cursor: pointer;
-    display: grid; place-items: center;
-    transition: background 0.15s ease, border-color 0.15s ease;
-}
-.drawer-close:hover { background: var(--panel-2); border-color: var(--line-strong); }
-.drawer-close img {
-    width: 24px; height: 24px; object-fit: contain; display: block;
-}
-.drawer-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 20px; }
-.drawer-section-title { font-size: 13px; font-weight: 700; color: var(--muted); margin: 8px 4px 12px; }
-.drawer-section-title:not(:first-child) { margin-top: 28px; }
-.drawer-card { border-radius: 14px; border: 1px solid var(--line); background: rgba(8, 5, 24, 0.5); overflow: hidden; margin-bottom: 14px; }
-.drawer-card-header { display: flex; align-items: center; gap: 8px; padding: 12px 14px; font-weight: 700; font-size: 14px; }
-.drawer-map { display: block; width: 100%; }
-.drawer-links { display: flex; flex-direction: column; gap: 8px; }
-.drawer-link {
-    display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
-    padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.03); color: var(--text); text-decoration: none;
-    font: 600 15px var(--body); cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease;
-}
-.drawer-link:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--line-strong); }
-.drawer-icon-box { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: var(--panel-2); flex-shrink: 0; transition: background 0.15s ease; }
-.drawer-icon-box .ic { width: 18px; height: 18px; }
-.drawer-link-text { flex: 1; }
-.drawer-link-meta { font-size: 12px; font-weight: 600; color: var(--muted); }
-.drawer-link[aria-pressed="true"] { border-color: var(--gold); }
-.drawer-link[aria-pressed="true"] .drawer-icon-box { background: var(--gold); }
-.drawer-link[aria-pressed="true"] .ic, .drawer-link.done .ic { filter: brightness(0); }
-.drawer-link[aria-pressed="true"] .drawer-link-meta { color: var(--gold); }
-.drawer-link.done .drawer-icon-box { background: var(--live); }
-
-.drawer-toast {
-    position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 90;
-    transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
-    background: var(--gold); color: #1B1200; font-weight: 700; font-size: 14px;
-    padding: 12px 20px; border-radius: 999px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    transition: 0.25s ease; max-width: 90vw; text-align: center;
-}
-.drawer-toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-/* Lightbox e modal */
-.lightbox, .bau-modal { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(5, 3, 15, 0.88); }
-.lightbox.open, .bau-modal.open { display: flex; }
-.lightbox img { max-width: 100%; max-height: 90dvh; border-radius: 12px; }
-.lightbox-close {
-    position: absolute; top: calc(16px + env(safe-area-inset-top, 0px)); right: 16px;
-    width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--line);
-    background: var(--panel); cursor: pointer;
-    display: grid; place-items: center;
-    transition: background 0.15s ease, border-color 0.15s ease;
-    padding: 0;
-}
-.lightbox-close:hover { background: var(--panel-2); border-color: var(--line-strong); }
-.lightbox-close img {
-    width: 24px; height: 24px; object-fit: contain; display: block;
-}
-.bau-modal-content { width: min(420px, 100%); border-radius: 24px; overflow: hidden; background: var(--panel-2); border: 1px solid var(--line-strong); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); }
-.bau-modal-image { display: block; width: 100%; max-height: 260px; object-fit: cover; }
-.bau-modal-body { padding: 24px; }
-.bau-modal-title { font-family: var(--display); font-size: 28px; line-height: 1.1; }
-.bau-modal-text { margin-top: 10px; color: var(--muted); }
-.bau-modal-btn { margin-top: 20px; width: 100%; height: 48px; border: 0; border-radius: 14px; background: var(--gold); color: #1B1200; font: 700 16px var(--body); cursor: pointer; }
-.bau-modal-btn:hover { background: #FFD066; }
-
-@media (max-width: 640px) {
-    .header-sub { display: none; }
-    .hero { grid-template-columns: 1fr; }
-    .bau-trigger { order: -1; width: 120px; }
-    .session-list { grid-template-columns: 1fr; }
-    .chances-row { flex-direction: column; align-items: flex-start; gap: 8px; }
-    .drawer-toggle { padding: 0 8px; }
-    .header-status span:last-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-}
-@media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
-    .parallax-layer { transform: none !important; }
-}
-
-/* ===== REFINAMENTOS VISUAIS ===== */
-::selection { background: var(--gold); color: #1B1200; }
-body { background: var(--bg); }
-.parallax-tint {
-    background:
-        radial-gradient(1000px 560px at 88% -8%, rgba(142, 91, 255, 0.42), transparent 62%),
-        radial-gradient(760px 480px at -4% 28%, rgba(255, 201, 60, 0.14), transparent 62%),
-        radial-gradient(900px 500px at 50% 115%, rgba(61, 220, 151, 0.07), transparent 60%),
-        linear-gradient(180deg, rgba(10, 7, 32, 0.5), var(--bg) 88%);
-}
-
-.site-header { background: rgba(10, 7, 32, 0.72); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25); }
-.header-logo { box-shadow: 0 0 0 2px var(--gold), 0 4px 14px rgba(255, 201, 60, 0.3); }
-.header-status { background: rgba(255, 255, 255, 0.05); border-color: var(--line-strong); }
-
-.hero { padding: clamp(36px, 8vw, 88px) 0 clamp(24px, 4vw, 40px); }
-.hero-title {
-    background: linear-gradient(180deg, #FFFFFF 0%, #FFE9A8 45%, #FFC93C 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    filter: drop-shadow(0 5px 0 rgba(10, 7, 32, 0.7)) drop-shadow(0 12px 28px rgba(255, 201, 60, 0.18));
-}
-.hero-desc { font-size: clamp(16px, 2.2vw, 20px); line-height: 1.6; }
-.hero-desc strong { color: var(--gold); }
-.bau-trigger::before {
-    inset: -4%;
-    background: radial-gradient(circle, rgba(255, 201, 60, 0.6), rgba(142, 91, 255, 0.3) 55%, transparent 72%);
-    filter: blur(22px);
-    animation: bau-glow 3.6s ease-in-out infinite;
-}
-@keyframes bau-glow { 0%, 100% { opacity: 0.75; transform: scale(0.96); } 50% { opacity: 1; transform: scale(1.06); } }
-.hero-bau { animation: bau-float 4.2s ease-in-out infinite; }
-@keyframes bau-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
-.bau-click-badge { background: var(--gold); color: #1B1200; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); }
-
-.timer {
-    border-radius: 28px;
-    background:
-        radial-gradient(600px 220px at 100% 0%, rgba(142, 91, 255, 0.28), transparent 70%),
-        linear-gradient(160deg, var(--panel-2), var(--panel) 72%);
-    border: 1px solid rgba(255, 201, 60, 0.28);
-    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-.timer[data-state="live"] { border-color: rgba(61, 220, 151, 0.5); box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5), 0 0 60px rgba(61, 220, 151, 0.18); }
-.timer::before { width: 8px; background: linear-gradient(180deg, var(--gold), var(--gold-deep)); }
-.timer[data-state="live"]::before { background: linear-gradient(180deg, #6BF0B6, var(--live)); }
-.timer-label { font-size: 18px; }
-.timer-cell {
-    background: linear-gradient(180deg, rgba(6, 4, 22, 0.75), rgba(6, 4, 22, 0.5));
-    border: 1px solid var(--line-strong);
-    border-radius: 18px;
-    box-shadow: inset 0 -3px 0 rgba(255, 201, 60, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-.timer-value {
-    background: linear-gradient(180deg, #FFFFFF 15%, #FFD66B 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    text-shadow: none; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.45));
-}
-.timer[data-state="live"] .timer-value { background: linear-gradient(180deg, #D8FFEC 10%, var(--live) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.timer[data-state="ended"] .timer-value { background: none; color: var(--muted); filter: none; }
-.timer-unit { font-size: 13px; letter-spacing: 0.04em; }
-.timer-bar { height: 6px; margin-top: 20px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
-.timer-bar span { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #6BF0B6, var(--live)); transition: width 1s linear; }
-.timer[data-state="waiting"] .timer-bar, .timer[data-state="ended"] .timer-bar { display: none; }
-
-.section-title { letter-spacing: 0.01em; }
-.section-header { padding-bottom: 14px; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
-.section-meta { background: rgba(255, 201, 60, 0.1); border-color: rgba(255, 201, 60, 0.35); color: var(--gold); }
-
-.session {
-    padding: 26px; border-radius: 22px; overflow: hidden;
-    background: linear-gradient(165deg, var(--panel-2) -40%, var(--panel) 55%);
-    border: 1px solid var(--line-strong);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3);
-}
-.session::after {
-    content: ''; position: absolute; right: -50px; top: -50px; width: 160px; height: 160px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 201, 60, 0.18), transparent 70%); pointer-events: none;
-}
-.session:nth-child(2)::after { background: radial-gradient(circle, rgba(142, 91, 255, 0.3), transparent 70%); }
-.session[data-active="true"]::after { background: radial-gradient(circle, rgba(61, 220, 151, 0.28), transparent 70%); }
-.session-icon-wrap { width: 54px; height: 54px; border-radius: 16px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
-.session-name { color: var(--text); }
-.session-badge { background: rgba(255, 201, 60, 0.16); color: var(--gold); }
-.session:nth-child(2) .session-badge { background: rgba(142, 91, 255, 0.24); color: #D5B9FF; }
-.session-time { font-size: clamp(38px, 6vw, 56px); }
-.session-note { padding-top: 12px; border-top: 1px dashed var(--line-strong); }
-
-.chances { border-radius: 22px; border: 1px solid var(--line-strong); background: linear-gradient(180deg, var(--panel-2) -60%, var(--panel) 40%); box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3); }
-.token-preview { background: linear-gradient(90deg, rgba(255, 201, 60, 0.2), rgba(142, 91, 255, 0.08) 60%, transparent); }
-.token-preview img { width: 52px; height: 52px; filter: drop-shadow(0 4px 10px rgba(255, 201, 60, 0.4)); }
-.chances-row:last-of-type { background: linear-gradient(90deg, rgba(255, 201, 60, 0.08), transparent 70%); }
-.chances-value.highlight { text-shadow: 0 0 24px rgba(255, 201, 60, 0.4); }
-.chances-note { background: rgba(0, 0, 0, 0.18); }
-.figure img { border-radius: 22px; box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35); transition: transform 0.2s ease; }
-@media (hover: hover) { .figure img:hover { transform: scale(1.01); } }
-
-.info { border-radius: 20px; background: linear-gradient(135deg, rgba(91, 181, 255, 0.16), rgba(142, 91, 255, 0.08)); border-color: rgba(91, 181, 255, 0.4); line-height: 1.6; }
-
-.site-footer { background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.25)); }
-
-.drawer { background: linear-gradient(180deg, var(--panel-2) -30%, var(--panel) 30%); }
-.drawer-card, .drawer-link { border-radius: 16px; }
-.drawer-link:hover { transform: translateX(-2px); }
-.drawer-link[aria-pressed="true"] { background: rgba(255, 201, 60, 0.08); }
-.drawer-link.done { border-color: var(--live); background: rgba(61, 220, 151, 0.08); }
-.drawer-toast { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(10, 7, 32, 0.6); }
-.bau-modal-content { border-radius: 28px; border-color: rgba(255, 201, 60, 0.35); }
-.bau-modal-btn { box-shadow: 0 4px 0 var(--gold-deep); transition: transform 0.1s ease, box-shadow 0.1s ease; }
-.bau-modal-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--gold-deep); }
-.lightbox, .bau-modal { backdrop-filter: blur(6px); background: rgba(5, 3, 15, 0.82); }
-
-@media (max-width: 640px) {
-    .timer { border-radius: 22px; }
-    .timer-cell { border-radius: 14px; }
-    .session { padding: 22px; }
-}
-@media (prefers-reduced-motion: reduce) {
-    .hero-bau, .bau-trigger::before { animation: none; }
-}
-</style>
+<link rel="stylesheet" href="css/index.css">
 </head>
 <body id="top">
 
@@ -514,7 +27,7 @@ body { background: var(--bg); }
 <header class="site-header">
     <div class="container">
         <div class="header-inner">
-            <img src="icone.jpg" alt="" class="header-logo" width="38" height="38" onerror="this.style.display='none'">
+            <img src="assets/icone.jpg" alt="" class="header-logo" width="38" height="38" onerror="this.style.display='none'">
             <div>
                 <div class="header-title">Baú do Fortnite</div>
                 <div class="header-sub">Parintins, AMT (UTC−4)</div>
@@ -524,7 +37,7 @@ body { background: var(--bg); }
                 <span id="headerStatus">Aguardando</span>
             </div>
             <button class="drawer-toggle" id="drawerToggle" type="button" aria-label="Abrir menu lateral" aria-expanded="false" aria-controls="drawer">
-                <img src="barra_lateral.png" alt="" width="22" height="22" onerror="this.style.display='none';this.parentElement.textContent='☰'">
+                <img src="assets/barra_lateral.png" alt="" width="22" height="22" onerror="this.style.display='none';this.parentElement.textContent='☰'">
             </button>
         </div>
     </div>
@@ -535,14 +48,14 @@ body { background: var(--bg); }
 
         <section class="hero">
             <div class="hero-content">
-                <h1 class="hero-title">Quando o Baú abre em Parintins</h1>
+                <h1 class="hero-title">Hora do Tesouro em Parintins</h1>
                 <p class="hero-desc">
-                    Duas janelas de <strong>2 horas</strong> no dia 14 de novembro de 2026.
+                    Duas janelas de <strong>2 horas</strong> <span id="heroDate">todo sábado</span>.
                     A chance do <strong>Token Pirata</strong> sobe 1,5× durante o evento.
                 </p>
             </div>
             <button class="bau-trigger" id="bauTrigger" type="button" aria-label="Abrir baú surpresa">
-                <img src="bau_1.png" alt="" class="hero-bau" width="230" height="230" onerror="this.parentElement.style.display='none'">
+                <img src="assets/bau_1.png" alt="" class="hero-bau" width="230" height="230" onerror="this.parentElement.style.display='none'">
                 <span class="bau-click-badge" id="bauClickBadge">0</span>
             </button>
         </section>
@@ -551,10 +64,10 @@ body { background: var(--bg); }
             <div class="timer" id="timer" data-state="waiting">
                 <div class="timer-header">
                     <div class="timer-label">
-                        <img class="ic" src="temporizador.png" alt="" width="22" height="22" onerror="this.style.display='none'">
+                        <img class="ic" src="assets/temporizador.png" alt="" width="22" height="22" onerror="this.style.display='none'">
                         <span id="timerLabel">Próxima sessão em</span>
                     </div>
-                    <div class="timer-target" id="timerTarget">14/11 às <strong>15:00</strong></div>
+                    <div class="timer-target" id="timerTarget">Todo sábado às <strong>15:00</strong></div>
                 </div>
                 <div class="timer-grid" role="timer" aria-live="off" aria-label="Tempo restante">
                     <div class="timer-cell"><div class="timer-value" id="tmDays">00</div><div class="timer-unit">dias</div></div>
@@ -572,7 +85,7 @@ body { background: var(--bg); }
 
         <section class="section" aria-labelledby="sessions-title">
             <div class="section-header">
-                <h2 class="section-title" id="sessions-title">Sessões do dia 14/11</h2>
+                <h2 class="section-title" id="sessions-title">Sessões do sábado</h2>
                 <span class="section-meta">2 × 2h</span>
             </div>
             <div class="session-list">
@@ -606,7 +119,7 @@ body { background: var(--bg); }
             </div>
             <div class="chances">
                 <div class="token-preview" id="tokenPreview">
-                    <img src="token.png" alt="" width="44" height="44" onerror="this.parentElement.style.display='none'">
+                    <img src="assets/token.png" alt="" width="44" height="44" onerror="this.parentElement.style.display='none'">
                     <div class="token-preview-text">
                         <strong>Token Pirata</strong>
                         <span>Desbloqueia 14 dias de loja gratuita</span>
@@ -625,13 +138,13 @@ body { background: var(--bg); }
                 </div>
             </div>
             <figure class="figure hidden" id="figureCartas">
-                <img src="cartas_token_procurado.png" alt="Cartaz de procurado do Token Pirata" loading="lazy" data-zoomable onerror="this.parentElement.style.display='none'">
+                <img src="assets/cartas_token_procurado.png" alt="Cartaz de procurado do Token Pirata" loading="lazy" data-zoomable onerror="this.parentElement.style.display='none'">
             </figure>
         </section>
 
         <section class="section" id="como-funciona">
             <div class="info">
-                <img src="interrogação.png" alt="" width="22" height="22" onerror="this.style.display='none'">
+                <img src="assets/interrogação.png" alt="" width="22" height="22" onerror="this.style.display='none'">
                 <div><strong>Como funciona:</strong> o Token Pirata libera a loja gratuita por 14 dias após a ativação. As sessões de Treasure Hours são as melhores janelas para tentar, já que a chance sobe de forma significativa por baú aberto.</div>
             </div>
         </section>
@@ -644,11 +157,11 @@ body { background: var(--bg); }
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
     <div class="drawer-header">
         <span class="icon-square">
-            <img src="barra_lateral.png" alt="" width="24" height="24" onerror="this.style.display='none'">
+            <img src="assets/barra_lateral.png" alt="" width="24" height="24" onerror="this.style.display='none'">
         </span>
         <span class="drawer-title" id="drawerTitle">Menu do baú</span>
         <button class="drawer-close" id="drawerClose" type="button" aria-label="Fechar menu">
-            <img src="x_fechar.png" alt="" width="24" height="24">
+            <img src="assets/x_fechar.png" alt="" width="24" height="24">
         </button>
     </div>
     <div class="drawer-body">
@@ -656,17 +169,17 @@ body { background: var(--bg); }
 
         <div class="drawer-card">
             <div class="drawer-card-header">Mapa da temporada</div>
-            <img src="mapa_temporada.png" alt="Mapa da temporada atual do Fortnite" class="drawer-map" loading="lazy" decoding="async" data-zoomable onerror="this.parentElement.style.display='none'">
+            <img src="assets/mapa_temporada.png" alt="Mapa da temporada atual do Fortnite" class="drawer-map" loading="lazy" decoding="async" data-zoomable onerror="this.parentElement.style.display='none'">
         </div>
 
         <div class="drawer-links">
             <a href="#sessions-title" class="drawer-link" data-drawer-link>
-                <span class="drawer-icon-box"><img class="ic" src="calendario.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
+                <span class="drawer-icon-box"><img class="ic" src="assets/calendario.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
                 <span class="drawer-link-text">Sessões do dia</span>
                 <span class="drawer-link-meta">2 janelas</span>
             </a>
             <a href="#chances-title" class="drawer-link" data-drawer-link>
-                <span class="drawer-icon-box"><img class="ic" src="checklist.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
+                <span class="drawer-icon-box"><img class="ic" src="assets/checklist.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
                 <span class="drawer-link-text">Chances do Token</span>
                 <span class="drawer-link-meta">1,5×</span>
             </a>
@@ -676,34 +189,34 @@ body { background: var(--bg); }
 
         <div class="drawer-links">
             <button class="drawer-link drawer-action" id="notifBtn" type="button" aria-pressed="false">
-                <span class="drawer-icon-box"><img class="ic" src="notificação.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
+                <span class="drawer-icon-box"><img class="ic" src="assets/notificação.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
                 <span class="drawer-link-text">Ativar notificações</span>
                 <span class="drawer-link-meta" id="notifStatus">desligado</span>
             </button>
             <button class="drawer-link drawer-action" id="squadBtn" type="button">
-                <span class="drawer-icon-box"><img class="ic" src="squad.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
+                <span class="drawer-icon-box"><img class="ic" src="assets/squad.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
                 <span class="drawer-link-text">Convidar squad</span>
-                <span class="drawer-link-meta">compartilhar</span>
+                <span class="drawer-link-meta" id="squadStatus">compartilhar</span>
             </button>
             <button class="drawer-link drawer-action" id="likeBtn" type="button" aria-pressed="false">
-                <span class="drawer-icon-box"><img class="ic" src="like.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
+                <span class="drawer-icon-box"><img class="ic" src="assets/like.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
                 <span class="drawer-link-text">Curtir a página</span>
                 <span class="drawer-link-meta" id="likeCount">0</span>
             </button>
             <button class="drawer-link drawer-action" id="playBtn" type="button">
-                <span class="drawer-icon-box"><img class="ic" src="jogar.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
+                <span class="drawer-icon-box"><img class="ic" src="assets/jogar.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
                 <span class="drawer-link-text">Abrir Fortnite</span>
                 <span class="drawer-link-meta">jogar agora</span>
             </button>
             <button class="drawer-link drawer-action" id="helpBtn" type="button">
-                <span class="drawer-icon-box"><img class="ic" src="interrogação.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
+                <span class="drawer-icon-box"><img class="ic" src="assets/interrogação.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
                 <span class="drawer-link-text">Como funciona</span>
                 <span class="drawer-link-meta">ajuda</span>
             </button>
             <button class="drawer-link drawer-action" id="checkinBtn" type="button" aria-pressed="false">
-                <span class="drawer-icon-box"><img class="ic" src="temporizador.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
+                <span class="drawer-icon-box"><img class="ic" src="assets/temporizador.png" alt="" width="18" height="18" onerror="this.style.display='none'"></span>
                 <span class="drawer-link-text">Marcar presença</span>
-                <span class="drawer-link-meta">check-in</span>
+                <span class="drawer-link-meta" id="checkinStatus">check-in</span>
             </button>
         </div>
     </div>
@@ -714,7 +227,7 @@ body { background: var(--bg); }
 <footer class="site-footer">
     <div class="container">
         <div class="footer-inner">
-            <span>Fuso America/Manaus, UTC−4. Evento de 14/11/2026.</span>
+            <span id="footerEventDate">Fuso America/Manaus, UTC−4. Evento semanal aos sábados.</span>
             <span>Feito para consulta rápida. <a href="#top">Voltar ao topo</a></span>
         </div>
     </div>
@@ -722,14 +235,14 @@ body { background: var(--bg); }
 
 <div class="lightbox" id="lightbox" role="dialog" aria-label="Imagem ampliada" aria-hidden="true">
     <button class="lightbox-close" id="lightboxClose" aria-label="Fechar">
-        <img src="x_fechar.png" alt="" width="24" height="24">
+        <img src="assets/x_fechar.png" alt="" width="24" height="24">
     </button>
     <img src="" alt="" id="lightboxImg">
 </div>
 
 <div class="bau-modal" id="bauModal" role="dialog" aria-modal="true" aria-labelledby="bauModalTitle" aria-hidden="true">
     <div class="bau-modal-content">
-        <img src="voce_nao_encontrou_nada.png" alt="" class="bau-modal-image" decoding="async" id="bauModalImage" onerror="this.style.display='none'">
+        <img src="assets/voce_nao_encontrou_nada.png" alt="" class="bau-modal-image" decoding="async" id="bauModalImage" onerror="this.style.display='none'">
         <div class="bau-modal-body">
             <div class="bau-modal-title" id="bauModalTitle">Você não encontrou nada ainda</div>
             <p class="bau-modal-text">O baú estava vazio. Tente nas próximas sessões, a chance do Token Pirata sobe 1,5× durante o evento.</p>
@@ -738,368 +251,7 @@ body { background: var(--bg); }
     </div>
 </div>
 
-<script>
-(function () {
-    'use strict';
-
-    // PARALLAX
-    (function initParallax() {
-        var layer = document.getElementById('parallaxLayer');
-        if (!layer) return;
-        var img = new Image();
-        img.onerror = function () { layer.classList.add('no-image'); };
-        img.src = 'background.jpg';
-        var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var isMobile = window.matchMedia('(max-width: 768px)').matches;
-        if (prefersReduced || isMobile) return;
-        var ticking = false;
-        function update() {
-            var y = window.scrollY || window.pageYOffset;
-            var offset = Math.min(y * 0.15, window.innerHeight * 0.5);
-            layer.style.transform = 'translate3d(0, ' + (-offset) + 'px, 0)';
-            ticking = false;
-        }
-        window.addEventListener('scroll', function () {
-            if (!ticking) { window.requestAnimationFrame(update); ticking = true; }
-        }, { passive: true });
-        update();
-    })();
-
-    // IMAGENS OPCIONAIS
-    var probe = new Image();
-    probe.onload = function () {
-        var f = document.getElementById('figureCartas');
-        if (f) f.classList.remove('hidden');
-    };
-    probe.src = 'cartas_token_procurado.png';
-
-    // GAVETA
-    var drawer = document.getElementById('drawer');
-    var drawerOverlay = document.getElementById('drawerOverlay');
-    var drawerToggle = document.getElementById('drawerToggle');
-    var drawerClose = document.getElementById('drawerClose');
-    var drawerToast = document.getElementById('drawerToast');
-    var toastTimer = null;
-    var lastFocused = null;
-
-    function showToast(msg) {
-        if (!drawerToast) return;
-        drawerToast.textContent = msg;
-        drawerToast.classList.add('show');
-        if (toastTimer) clearTimeout(toastTimer);
-        toastTimer = setTimeout(function () { drawerToast.classList.remove('show'); }, 2200);
-    }
-
-    function openDrawer() {
-        lastFocused = document.activeElement;
-        drawerOverlay.hidden = false;
-        void drawerOverlay.offsetWidth;
-        drawer.classList.add('open');
-        drawerOverlay.classList.add('open');
-        drawer.setAttribute('aria-hidden', 'false');
-        drawerToggle.setAttribute('aria-expanded', 'true');
-        document.body.classList.add('drawer-open');
-        setTimeout(function () { drawerClose.focus(); }, 50);
-    }
-
-    function closeDrawer() {
-        drawer.classList.remove('open');
-        drawerOverlay.classList.remove('open');
-        drawer.setAttribute('aria-hidden', 'true');
-        drawerToggle.setAttribute('aria-expanded', 'false');
-        document.body.classList.remove('drawer-open');
-        setTimeout(function () {
-            if (!drawer.classList.contains('open')) drawerOverlay.hidden = true;
-        }, 260);
-        if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
-    }
-
-    drawerToggle.addEventListener('click', function () {
-        if (drawer.classList.contains('open')) closeDrawer(); else openDrawer();
-    });
-    drawerClose.addEventListener('click', closeDrawer);
-    drawerOverlay.addEventListener('click', closeDrawer);
-    document.addEventListener('keydown', function (e) {
-        if (!drawer.classList.contains('open')) return;
-        if (e.key === 'Escape') { closeDrawer(); return; }
-        if (e.key !== 'Tab') return;
-        var focaveis = drawer.querySelectorAll('a[href], button:not([disabled])');
-        if (!focaveis.length) return;
-        var primeiro = focaveis[0], ultimo = focaveis[focaveis.length - 1];
-        if (e.shiftKey && document.activeElement === primeiro) { e.preventDefault(); ultimo.focus(); }
-        else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primeiro.focus(); }
-    });
-    document.querySelectorAll('[data-drawer-link]').forEach(function (link) {
-        link.addEventListener('click', closeDrawer);
-    });
-
-    // ACOES DA GAVETA
-    var notifBtn = document.getElementById('notifBtn');
-    var notifStatus = document.getElementById('notifStatus');
-    notifBtn.addEventListener('click', function () {
-        if (!('Notification' in window)) { showToast('Seu navegador não suporta notificações.'); return; }
-        if (Notification.permission === 'granted') {
-            var enabled = notifBtn.getAttribute('aria-pressed') !== 'true';
-            notifBtn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
-            notifStatus.textContent = enabled ? 'ligado' : 'desligado';
-            showToast(enabled ? 'Notificações ativadas.' : 'Notificações desativadas.');
-            return;
-        }
-        Notification.requestPermission().then(function (perm) {
-            if (perm === 'granted') {
-                notifBtn.setAttribute('aria-pressed', 'true');
-                notifStatus.textContent = 'ligado';
-                showToast('Notificações ativadas.');
-            } else {
-                showToast('Permissão negada.');
-            }
-        });
-    });
-
-    document.getElementById('squadBtn').addEventListener('click', function () {
-        var url = window.location.href;
-        var text = 'Treasure Hours do Baú do Fortnite em Parintins. Confere os horários: ' + url;
-        if (navigator.share) {
-            navigator.share({ title: 'Baú do Fortnite', text: text, url: url }).catch(function () {});
-        } else if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(function () {
-                showToast('Link copiado para convidar o squad.');
-            }).catch(function () { showToast('Não foi possível copiar o link.'); });
-        } else {
-            showToast(url);
-        }
-    });
-
-    var likeBtn = document.getElementById('likeBtn');
-    var likeCountEl = document.getElementById('likeCount');
-    var STORAGE_LIKE = 'bau_fortnite_liked';
-    try {
-        if (localStorage.getItem(STORAGE_LIKE) === '1') {
-            likeBtn.setAttribute('aria-pressed', 'true');
-            likeCountEl.textContent = '1';
-        }
-    } catch (e) {}
-    likeBtn.addEventListener('click', function () {
-        var liked = likeBtn.getAttribute('aria-pressed') !== 'true';
-        likeBtn.setAttribute('aria-pressed', liked ? 'true' : 'false');
-        likeCountEl.textContent = liked ? '1' : '0';
-        try { localStorage.setItem(STORAGE_LIKE, liked ? '1' : '0'); } catch (e) {}
-        showToast(liked ? 'Valeu pela curtida.' : 'Curtida removida.');
-    });
-
-    document.getElementById('playBtn').addEventListener('click', function () {
-        showToast('Abrindo o Fortnite...');
-        setTimeout(function () { window.open('https://www.fortnite.com/', '_blank', 'noopener'); }, 400);
-    });
-
-    document.getElementById('helpBtn').addEventListener('click', function () {
-        closeDrawer();
-        var ajuda = document.getElementById('como-funciona');
-        if (ajuda) ajuda.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        showToast('Veja a seção Como funciona.');
-    });
-
-    var checkinBtn = document.getElementById('checkinBtn');
-    var STORAGE_CHECKIN = 'bau_fortnite_checkin';
-    try {
-        if (localStorage.getItem(STORAGE_CHECKIN) === '1') {
-            checkinBtn.setAttribute('aria-pressed', 'true');
-            checkinBtn.classList.add('done');
-        }
-    } catch (e) {}
-    checkinBtn.addEventListener('click', function () {
-        var done = checkinBtn.getAttribute('aria-pressed') !== 'true';
-        checkinBtn.setAttribute('aria-pressed', done ? 'true' : 'false');
-        checkinBtn.classList.toggle('done', done);
-        try { localStorage.setItem(STORAGE_CHECKIN, done ? '1' : '0'); } catch (e) {}
-        showToast(done ? 'Presença marcada.' : 'Check-in desfeito.');
-    });
-
-    // LIGHTBOX
-    var lightbox = document.getElementById('lightbox');
-    var lightboxImg = document.getElementById('lightboxImg');
-    function openLightbox(src, alt) {
-        lightboxImg.src = src;
-        lightboxImg.alt = alt || '';
-        lightbox.classList.add('open');
-        lightbox.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-    }
-    function closeLightbox() {
-        lightbox.classList.remove('open');
-        lightbox.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-    }
-    document.querySelectorAll('[data-zoomable]').forEach(function (el) {
-        el.addEventListener('click', function () { openLightbox(el.src, el.alt); });
-        el.style.cursor = 'zoom-in';
-    });
-    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', function (e) { if (e.target === lightbox) closeLightbox(); });
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
-    });
-
-    // BAU (EASTER EGG)
-    var bauTrigger = document.getElementById('bauTrigger');
-    var bauClickBadge = document.getElementById('bauClickBadge');
-    var bauModal = document.getElementById('bauModal');
-    var bauModalClose = document.getElementById('bauModalClose');
-    var clickCount = 0;
-    var REQUIRED_CLICKS = 5;
-    var resetTimer = null;
-    var bauLastFocused = null;
-
-    function resetBadge() {
-        clickCount = 0;
-        bauClickBadge.classList.remove('visible');
-        bauClickBadge.textContent = '0';
-    }
-    function openBauModal() {
-        bauLastFocused = document.activeElement;
-        bauModal.classList.add('open');
-        bauModal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-        bauModalClose.focus();
-    }
-    function closeBauModal() {
-        bauModal.classList.remove('open');
-        bauModal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-        resetBadge();
-        if (resetTimer) clearTimeout(resetTimer);
-        if (bauLastFocused && typeof bauLastFocused.focus === 'function') bauLastFocused.focus();
-    }
-    bauTrigger.addEventListener('click', function () {
-        clickCount++;
-        bauClickBadge.textContent = clickCount;
-        bauClickBadge.classList.add('visible');
-        bauTrigger.classList.remove('shake');
-        void bauTrigger.offsetWidth;
-        bauTrigger.classList.add('shake');
-        if (navigator.vibrate) navigator.vibrate(30);
-        if (resetTimer) clearTimeout(resetTimer);
-        resetTimer = setTimeout(resetBadge, 2000);
-        if (clickCount >= REQUIRED_CLICKS) openBauModal();
-    });
-    bauModalClose.addEventListener('click', closeBauModal);
-    bauModal.addEventListener('click', function (e) { if (e.target === bauModal) closeBauModal(); });
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && bauModal.classList.contains('open')) closeBauModal();
-    });
-
-    // TIMER
-    var sessoes = [
-        // Horários de Parintins (UTC-4) convertidos para UTC, para a contagem não depender do fuso do aparelho
-        { id: 'session1', inicio: new Date(Date.UTC(2026, 10, 14, 19, 0, 0)), fim: new Date(Date.UTC(2026, 10, 14, 21, 0, 0)), rotuloInicio: '15:00', rotuloFim: '17:00' },
-        { id: 'session2', inicio: new Date(Date.UTC(2026, 10, 15, 2, 0, 0)), fim: new Date(Date.UTC(2026, 10, 15, 4, 0, 0)), rotuloInicio: '22:00', rotuloFim: '00:00' }
-    ];
-
-    var el = {
-        timer: document.getElementById('timer'),
-        label: document.getElementById('timerLabel'),
-        target: document.getElementById('timerTarget'),
-        days: document.getElementById('tmDays'),
-        hours: document.getElementById('tmHours'),
-        minutes: document.getElementById('tmMinutes'),
-        seconds: document.getElementById('tmSeconds'),
-        headerDot: document.getElementById('headerDot'),
-        headerStatus: document.getElementById('headerStatus'),
-        bar: document.getElementById('timerBar')
-    };
-
-    var ultimoSegundo = -1;
-    var estadoAnterior = null;
-
-    function pad(n) { return n < 10 ? '0' + n : String(n); }
-
-    function tickAnim(node) {
-        node.classList.remove('tick');
-        void node.offsetWidth;
-        node.classList.add('tick');
-    }
-
-    function setState(state) {
-        el.timer.setAttribute('data-state', state);
-        var dotClass = 'status-dot';
-        if (state === 'live') dotClass += ' live';
-        if (state === 'ended') dotClass += ' ended';
-        el.headerDot.className = dotClass;
-        if (state === 'live') el.headerStatus.textContent = 'Ao vivo';
-        else if (state === 'waiting') el.headerStatus.textContent = 'Aguardando';
-        else el.headerStatus.textContent = 'Encerrado';
-    }
-
-    function atualizar() {
-        var agora = new Date();
-        var proxima = null;
-        var ativa = null;
-
-        for (var i = 0; i < sessoes.length; i++) {
-            var s = sessoes[i];
-            if (agora >= s.inicio && agora < s.fim) { ativa = s; break; }
-            if (agora < s.inicio && !proxima) proxima = s;
-        }
-
-        for (var j = 0; j < sessoes.length; j++) {
-            var node = document.getElementById(sessoes[j].id);
-            if (node) node.setAttribute('data-active', 'false');
-        }
-
-        var alvo, estado;
-
-        if (ativa) {
-            alvo = ativa.fim;
-            estado = 'live';
-            var ativoNode = document.getElementById(ativa.id);
-            if (ativoNode) ativoNode.setAttribute('data-active', 'true');
-            el.label.textContent = 'Sessão em andamento, termina em';
-            el.target.innerHTML = (ativa.id === 'session2' ? '15/11' : '14/11') + ' às <strong>' + ativa.rotuloFim + '</strong>';
-        } else if (proxima) {
-            alvo = proxima.inicio;
-            estado = 'waiting';
-            el.label.textContent = 'Próxima sessão em';
-            el.target.innerHTML = '14/11 às <strong>' + proxima.rotuloInicio + '</strong>';
-        } else {
-            estado = 'ended';
-            el.label.textContent = 'Evento encerrado';
-            el.target.innerHTML = 'Sessões de 14/11 concluídas';
-            el.days.textContent = el.hours.textContent = el.minutes.textContent = el.seconds.textContent = '00';
-            if (el.bar) el.bar.style.width = '0%';
-            setState(estado);
-            return;
-        }
-
-        setState(estado);
-
-        if (estadoAnterior !== null && estadoAnterior !== estado && estado === 'live') {
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-        }
-        estadoAnterior = estado;
-
-        var total = Math.floor(Math.max(0, alvo.getTime() - agora.getTime()) / 1000);
-        if (el.bar) {
-            var pct = estado === 'live' ? 100 - (total * 1000 / (ativa.fim - ativa.inicio)) * 100 : 0;
-            el.bar.style.width = Math.max(0, Math.min(100, pct)) + '%';
-        }
-        var dias = Math.min(99, Math.floor(total / 86400));
-        el.days.textContent = pad(dias);
-        el.hours.textContent = pad(Math.floor((total % 86400) / 3600));
-        el.minutes.textContent = pad(Math.floor((total % 3600) / 60));
-        var seg = total % 60;
-        if (seg !== ultimoSegundo) {
-            el.seconds.textContent = pad(seg);
-            tickAnim(el.seconds);
-            ultimoSegundo = seg;
-        }
-    }
-
-    atualizar();
-    var intervalo = setInterval(function () {
-        atualizar();
-        if (el.timer.getAttribute('data-state') === 'ended') clearInterval(intervalo);
-    }, 1000);
-})();
-</script>
+<script src="js/schedule.js"></script>
+<script src="js/index.js"></script>
 </body>
 </html>

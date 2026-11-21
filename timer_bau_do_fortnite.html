@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timer OBS — Baú do Fortnite</title>
+<link rel="icon" type="image/x-icon" href="assets/icone.ico">
+<link rel="icon" type="image/jpeg" href="assets/icone.jpg">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800&family=Lilita+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/timer.css">
+</head>
+<body data-style="card" data-pos="top-left">
+
+<div class="obs-stage">
+    <div class="timer-widget" id="timer" data-state="waiting">
+        <div class="timer-accent" aria-hidden="true"></div>
+        <div class="timer-icon">
+            <img src="assets/bau_1.png" alt="" width="40" height="40" onerror="this.style.display='none'">
+            <span class="live-dot" aria-hidden="true"></span>
+        </div>
+
+        <div class="timer-body">
+            <div class="timer-top">
+                <span class="timer-label" id="timerLabel">Hora do Tesouro em</span>
+                <span class="timer-target" id="timerTarget">21/11 · <strong>15:00</strong></span>
+            </div>
+
+            <div class="timer-clock" role="timer" aria-live="off" aria-label="Tempo restante">
+                <span class="clock-part clock-days" id="wrapDays"><span class="clock-num" id="tmDays">00</span><span class="clock-unit">d</span></span>
+                <span class="clock-part"><span class="clock-num" id="tmHours">00</span><span class="clock-unit">h</span></span>
+                <span class="clock-sep">:</span>
+                <span class="clock-part"><span class="clock-num" id="tmMinutes">00</span><span class="clock-unit">m</span></span>
+                <span class="clock-sep">:</span>
+                <span class="clock-part"><span class="clock-num" id="tmSeconds">00</span><span class="clock-unit">s</span></span>
+            </div>
+        </div>
+
+        <div class="timer-bar" aria-hidden="true"><span id="timerBar"></span></div>
+    </div>
+</div>
+
+<script src="js/schedule.js"></script>
+<script src="js/timer.js"></script>
+</body>
+</html>

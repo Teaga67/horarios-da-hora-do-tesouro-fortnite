@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webhooks, Menções & Servidores — Alya do Fortnite</title>
+<link rel="icon" type="image/jpeg" href="assets/icone_alya.jpg">
+<meta name="theme-color" content="#100C24">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/mensagens.css">
+</head>
+<body>
+
+<img src="assets/bau_1.png" alt="" class="bg-bau" aria-hidden="true" onerror="this.style.display='none'">
+
+<main class="shell">
+    <header class="topbar">
+        <div class="brand">
+            <img src="assets/icone_alya.jpg" alt="" class="brand-avatar" id="botAvatar" width="44" height="44" onerror="this.style.display='none'">
+            <div>
+                <h1 class="title">Webhooks, Menções &amp; Servidores</h1>
+                <p class="subtitle">Envie mensagens ou webhooks mencionando pessoas e cargos, ou remova o bot de servidores.</p>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <nav class="dash-nav" aria-label="Navegação do painel">
+                <a href="dashboard.html" class="nav-tab">Avisos Automáticos</a>
+                <a href="mensagens.html" class="nav-tab active">Webhooks &amp; Servidores</a>
+            </nav>
+            <div class="bot-pill" id="botPill" data-state="connecting">
+                <span class="pill-dot"></span>
+                <span id="botStatusText">Conectando bot...</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="grid">
+        <section class="card">
+            <div class="card-title">
+                <img src="assets/mandar.png" alt="" class="inline-ic" onerror="this.style.display='none'">
+                Enviar mensagem ou webhook
+            </div>
+
+            <div class="field">
+                <label class="label" for="sendMode">Modo de envio</label>
+                <select class="select" id="sendMode">
+                    <option value="channel_webhook">Webhook do canal (nome e avatar customizados)</option>
+                    <option value="bot">Enviar diretamente como Bot</option>
+                    <option value="webhook_url">Colar URL de Webhook manualmente</option>
+                </select>
+            </div>
+
+            <div id="channelTargetBox">
+                <div class="two-col">
+                    <div class="field">
+                        <label class="label" for="guildSelect">Servidor</label>
+                        <select class="select" id="guildSelect">
+                            <option value="">Carregando servidores...</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label class="label" for="channelSelect">Canal de texto</label>
+                        <select class="select" id="channelSelect" disabled>
+                            <option value="">Selecione um servidor</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field-hint" id="channelHint"></div>
+            </div>
+
+            <div id="manualWebhookBox" style="display:none;">
+                <div class="field">
+                    <label class="label" for="webhookUrlInput">URL do Webhook do Discord</label>
+                    <input class="input" type="url" id="webhookUrlInput" placeholder="https://discord.com/api/webhooks/..." spellcheck="false">
+                </div>
+            </div>
+
+            <div id="webhookProfileBox" class="two-col">
+                <div class="field">
+                    <label class="label" for="webhookNameInput">Nome do Webhook (opcional)</label>
+                    <input class="input" type="text" id="webhookNameInput" placeholder="Ex: Alya do Fortnite" maxlength="80">
+                </div>
+                <div class="field">
+                    <label class="label" for="webhookAvatarInput">URL do Avatar (opcional)</label>
+                    <input class="input" type="url" id="webhookAvatarInput" placeholder="https://..." spellcheck="false">
+                </div>
+            </div>
+
+            <div class="mentions-box" id="mentionsBox">
+                <div class="mentions-head">
+                    <span class="label" style="margin:0;">Inserir menções na mensagem</span>
+                    <div class="quick-chips">
+                        <button type="button" class="chip-btn" data-insert="@everyone ">@everyone</button>
+                        <button type="button" class="chip-btn" data-insert="@here ">@here</button>
+                    </div>
+                </div>
+
+                <div class="two-col">
+                    <div class="field" style="margin-top:10px;">
+                        <label class="label" for="roleSelect">Mencionar cargo</label>
+                        <div class="inline-action">
+                            <select class="select" id="roleSelect" disabled>
+                                <option value="">Selecione um servidor</option>
+                            </select>
+                            <button type="button" class="btn-mini" id="insertRoleBtn" disabled>Inserir</button>
+                        </div>
+                    </div>
+
+                    <div class="field" style="margin-top:10px;">
+                        <label class="label" for="memberSelect">Mencionar pessoa</label>
+                        <div class="inline-action">
+                            <select class="select" id="memberSelect" disabled>
+                                <option value="">Carregando...</option>
+                            </select>
+                            <button type="button" class="btn-mini" id="insertMemberBtn" disabled>Inserir</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field" style="margin-top:10px;">
+                    <label class="label" for="manualUserId">Ou mencionar pessoa pelo ID do Discord</label>
+                    <div class="inline-action">
+                        <input class="input" type="text" id="manualUserId" placeholder="Cole o ID numérico do usuário (ex: 123456789012345678)">
+                        <button type="button" class="btn-mini" id="resolveUserBtn">Mencionar ID</button>
+                    </div>
+                    <div class="field-hint" id="memberHint"></div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label" for="messageContent">Texto da mensagem</label>
+                <textarea class="textarea" id="messageContent" rows="4" placeholder="Escreva a mensagem e use os botões acima para mencionar pessoas ou cargos..."></textarea>
+            </div>
+
+            <details class="embed-details">
+                <summary>Adicionar Embed opcional (título, descrição, cor)</summary>
+                <div class="embed-fields">
+                    <div class="field">
+                        <label class="label" for="embedTitle">Título do Embed</label>
+                        <input class="input" type="text" id="embedTitle" maxlength="256" placeholder="Ex: Aviso do Baú do Fortnite">
+                    </div>
+                    <div class="field">
+                        <label class="label" for="embedDesc">Descrição do Embed</label>
+                        <textarea class="textarea" id="embedDesc" rows="3" placeholder="Texto dentro do card..."></textarea>
+                    </div>
+                    <div class="field">
+                        <label class="label" for="embedColor">Cor da barra lateral</label>
+                        <input class="color-input" type="color" id="embedColor" value="#FFC93C">
+                    </div>
+                </div>
+            </details>
+
+            <div class="preview">
+                <div class="preview-label">Prévia</div>
+                <div class="preview-msg">
+                    <img src="assets/icone_alya.jpg" alt="" class="preview-avatar" id="previewAvatar" width="36" height="36" onerror="this.style.display='none'">
+                    <div class="preview-content">
+                        <div class="preview-author">
+                            <span id="previewAuthorName">Alya Bot</span>
+                            <span class="preview-bot" id="previewBadge">APP</span>
+                        </div>
+                        <div class="preview-text" id="previewText"></div>
+                        <div class="preview-embed" id="previewEmbed" style="display:none;">
+                            <div class="preview-embed-title" id="previewEmbedTitle"></div>
+                            <div class="preview-embed-desc" id="previewEmbedDesc"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-live" type="button" id="sendCustomBtn">
+                    <img src="assets/mandar.png" alt="" class="btn-icon" width="20" height="20" onerror="this.style.display='none'">
+                    Enviar agora no Discord
+                </button>
+            </div>
+
+            <div class="status" id="status" role="status" aria-live="polite"></div>
+        </section>
+
+        <section class="side-col">
+            <div class="card">
+                <div class="card-header-row">
+                    <div class="card-title">
+                        <img src="assets/squad.png" alt="" class="inline-ic" onerror="this.style.display='none'">
+                        Servidores do Bot
+                    </div>
+                    <span class="badge-auto" id="guildsCountBadge">0</span>
+                </div>
+                <div class="guilds-list" id="guildsList">
+                    <div class="empty-msg">Carregando servidores...</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <img src="assets/notificação.png" alt="" class="inline-ic" onerror="this.style.display='none'">
+                    Registro recente
+                </div>
+                <div class="logs-list" id="logsList">
+                    <div class="empty-msg">Nenhum evento registrado ainda.</div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script src="js/mensagens.js"></script>
+</body>
+</html>
